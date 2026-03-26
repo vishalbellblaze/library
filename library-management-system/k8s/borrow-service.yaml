@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: borrow-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: borrow-service
+  template:
+    metadata:
+      labels:
+        app: borrow-service
+    spec:
+      containers:
+        - name: borrow-service
+          image: <your-dockerhub-username>/borrow-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BOOK_SERVICE_URL
+              value: "http://book-service"
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: borrow-service
+spec:
+  selector:
+    app: borrow-service
+  ports:
+    - port: 80
+      targetPort: 8080
+  type: ClusterIP
